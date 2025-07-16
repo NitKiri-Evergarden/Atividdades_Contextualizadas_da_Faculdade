@@ -1,0 +1,2 @@
+# Atividdades_Contextualizadas_da_Faculdade
+Este repositório reúne todas as atividades acadêmicas que realizei ao longo dos diversos períodos da minha graduação. Mais do que apenas tarefas de um curso específico, ele reflete toda a minha trajetória universitária, com atividades contextualizadas e projetos que demonstram meu desenvolvimento, aprendizados e experiências durante essa caminhada acadêmica.
