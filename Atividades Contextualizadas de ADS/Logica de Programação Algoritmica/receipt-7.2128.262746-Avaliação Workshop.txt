@@ -1,0 +1,8 @@
+Envio bem-sucedido!
+Curso: 7.2128.262746, Módulo E - 261845 . 7 - Lógica de Programação Algorítmica - D.20242.E
+Avaliação: Avaliação Workshop
+
+Data de envio: 10/12/24 22:46
+Tamanho do envio: 11,1 KB
+Autor do envio: Pedro Augusto Santos Silva
+Número de confirmação: db4b663ce3af43f39865a240a975fef6

@@ -1,0 +1,134 @@
+/* Reset CSS */
+* {
+  margin: 0;/*margem externa zerada*/
+  padding: 0;/*margem interna zerada*/
+  box-sizing: border-box;/*o tamanho do box é o tamanho da borda*/
+}
+/*corpo do site visivel ao usuário*/
+body {
+  padding: 0px;/*margim interna do corpo*/
+}
+/* Container principal */
+.container {
+  display: grid;/*define o container como grid*/
+  gap: 10px;/*espaçamento entre os itens*/
+  background-color: #faf;/*cor de fundo do container*/
+  padding: 10px;/*margem interna do container*/
+
+  /* Define colunas e linhas */
+  grid-template-columns: 1fr 4fr 1fr;/*fr = fração do espaço disponível*/
+  grid-template-rows: 100px 500px 50px;/* altura das linhas*/
+
+  /* Define as áreas */
+  grid-template-areas:/*nomeia as áreas do grid*/
+    "box1 box1 box1"/*box1 ocupa as três colunas da primeira linha*/
+    "box2 box3 box4"/*box2, box3 e box4 ocupam cada uma uma coluna da segunda linha*/
+    "box5 box5 box5";/*box5 ocupa as três colunas da terceira linha*/
+
+  /* Centraliza conteúdo */
+  align-items: center;/*alinha os itens verticalmente ao centro*/
+  justify-content:space-between;/*alinha os itens horizontalmente com espaço entre eles*/
+}
+
+/* Itens */
+/*box para iserir o cabeçalho*/
+.box1 {
+  grid-area: box1;/* nomeação da área*/
+  background-color: white;/*cor de fundo do box1*/
+  width: 100%;/*largura total do box1*/
+  height: 100%;/* altura total do box1*/
+  display: flex;/*distibuição do conteudo*/
+  align-items: center;/*alinhamento vertical*/
+  justify-content: center;/*alinhamento horizontal*/
+}
+/*atributos em conjunto*/
+.box2, .box3, .box4{
+  height: 100%;/*altura conjunta*/
+  padding: 20px; /*margem interna*/
+  display:flex;/*modelo de organização flexissível*/
+  align-items: center;/*alinhamento horizontal no centro*/
+  justify-content: center;/*alinhamento vertical ao centro*/
+}
+/*box para inserir propaganda ou mapas*/
+.box2 {
+  grid-area: box2; /*nome do item*/
+  background-color: yellow; /*cor de fundo*/
+}
+/*box para inserir outros conteúdos(imagens e textos)*/
+.box3 {
+  grid-area: box3; /*nome do item*/
+  background-color: orange; /*cor de fundo*/
+  padding: 0px; /*margem interna*/
+  margin: 0px; /*margem externa*/
+}
+/*box para inserir os videos*/
+.box4 {
+  grid-area: box4; /*nome do item*/
+  background-color: lightgreen; /*cor de fundo*/
+  flex-direction: column;/* organização do conteudo em horizontal*/
+  gap:5px;/*espaço entre os itens*/
+}
+/*box para inserir o rodapé*/
+.box5 {
+  grid-area: box5; /*nome do item*/
+  background-color: lightblue; /*cor de fundo*/
+  width: 100%;/*largura total do box1*/
+  height: 100%;/* altura total do box1*/
+  display: flex;/*organização flexissivel dos itens*/
+  align-items: center;/*alinhamento vertical centro*/
+  justify-content: center;/*alinhamento horizontal centro*/
+}
+/*container incluso no conteudo principal*/
+.container2 {
+    width: 100%;/*largura total do box1*/
+  height: 100%;/* altura total do box1*/
+  display: grid;/*define o container como grid*/
+    gap: 10px;/*espaçamento entre os itens*/
+
+  padding: 5px;/*margim interna do container*/
+
+  /* Define colunas e linhas */
+  grid-template-columns: 2fr 1fr;/*fr = fração do espaço disponível*/
+  grid-template-rows: 1fr 1fr;/* altura das linhas*/
+  
+  /* Define as áreas */
+  grid-template-areas:/*nomeia as áreas do grid*/
+    "box6 box7"/*box6 e box7 ocupam cada uma uma coluna da primeira linha*/
+    "box8 box9";/*box8 e box9 ocupam cada uma uma coluna da segunda linha*/
+
+  /* Centraliza conteúdo */
+  align-items: center; /*alinha os itens verticalmente ao centro*/
+}
+/*conteudo compartilhado entre os itens*/
+.box6, .box7, .box8, .box9, .box10{
+  width: 100%;/*largura total do box1*/
+  height: 100%;/* altura total do box1*/
+  display:flex;/*organização flexissivel*/
+  flex-direction: column;/*orientação dos itens em vertical*/
+  align-items: center;/*alinhamento vertical ao centro*/
+  justify-content: center;/*alinhamento horizontal ao centro*/
+}
+/*box para inserir imagem*/
+.box6 {
+  grid-area: box6; /*nome do item*/
+  background-color: rgb(6, 159, 6); /*cor de fundo*/
+}
+/*box para inserir texto*/
+.box7 {
+  grid-area: box7; /*nome do item*/
+}
+/*box para inserir texto*/
+.box8 {
+  grid-area: box8; /*nome do item*/
+
+}
+/*box para inserir imagem*/
+.box9 {
+  grid-area: box9; /*nome do item*/
+  background-color: rgb(156, 59, 130); /*cor de fundo*/
+}
+/*box para inserir videos ou imagens*/
+.box10{
+    grid-area: box10; /*nome do item*/
+    background-color: rgb(59, 156, 130); /*cor de fundo*/
+}
