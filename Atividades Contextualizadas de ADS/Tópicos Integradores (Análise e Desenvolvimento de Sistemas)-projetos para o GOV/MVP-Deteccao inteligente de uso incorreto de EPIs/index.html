@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MVP - Controle de EPIs</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --border-color: #cbd5e1;
+            --danger-color: #dc2626;
+            --success-color: #16a34a;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 420px;
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        button {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .notification-card {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+        }
+        .btn-success:hover {
+            background-color: #15803d;
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+        }
+        .btn-danger:hover {
+            background-color: #b91c1c;
+        }
+
+        .status-box {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: 600;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- TELA 1: Cadastro de Funcionário pela Empresa -->
+        <div id="screen-1" class="screen active">
+            <h2>Cadastro (Empresa)</h2>
+            <form id="form-cadastro" onsubmit="cadastrarUsuario(event)">
+                <div class="form-group">
+                    <label>Nome da Empresa</label>
+                    <input type="text" id="empresa" required placeholder="Ex: Construtora ABC">
+                </div>
+                <div class="form-group">
+                    <label>Área de Atuação</label>
+                    <input type="text" id="atuacao" required placeholder="Ex: Construção Civil">
+                </div>
+                <div class="form-group">
+                    <label>Nome do Funcionário</label>
+                    <input type="text" id="nomeFunc" required placeholder="Ex: João Silva">
+                </div>
+                <div class="form-group">
+                    <label>ID do Funcionário</label>
+                    <input type="text" id="idFunc" required placeholder="Ex: 12345">
+                </div>
+                <div class="form-group">
+                    <label>Número de Telefone</label>
+                    <input type="tel" id="telFunc" required placeholder="Ex: (11) 98765-4321">
+                </div>
+                <button type="submit">Cadastrar e Ir para Login</button>
+            </form>
+        </div>
+
+        <!-- TELA 2: Login do Usuário -->
+        <div id="screen-2" class="screen">
+            <h2>Login do Funcionário</h2>
+            <form id="form-login" onsubmit="fazerLogin(event)">
+                <div class="form-group">
+                    <label>Nome da Empresa</label>
+                    <input type="text" id="loginEmpresa" required placeholder="Confirme o nome da empresa">
+                </div>
+                <div class="form-group">
+                    <label>ID do Funcionário</label>
+                    <input type="text" id="loginId" required placeholder="Seu ID cadastrado">
+                </div>
+                <div class="form-group">
+                    <label>Número de Telefone</label>
+                    <input type="tel" id="loginTel" required placeholder="Seu telefone cadastrado">
+                </div>
+                <div class="form-group">
+                    <label>Criar Senha</label>
+                    <input type="password" id="loginSenha" required placeholder="Digite sua senha de acesso">
+                </div>
+                <button type="submit">Entrar no Sistema</button>
+            </form>
+        </div>
+
+        <!-- TELA 3: Recebimento de Notificações -->
+        <div id="screen-3" class="screen">
+            <h2>Central de EPIs</h2>
+            <div class="notification-card">
+                <strong>Aviso do Sistema:</strong><br>
+                Bem-vindo(a), <span id="span-nome"></span>!<br><br>
+                Hoje você deve receber e utilizar os seguintes EPIs: **Capacete de Segurança, Óculos de Proteção e Botas com Biqueira**. Lembre-se de utilizá-los sempre durante a jornada.
+            </div>
+
+            <p style="font-size: 0.85rem; color: #64748b; text-align: center;">
+                Tentativas sem confirmação: <span id="contador-avisos">0</span>/3
+            </p>
+
+            <button onclick="confirmarEpi(true)" class="btn-success">Confirmar Uso dos EPIs</button>
+            <button onclick="confirmarEpi(false)" class="btn-danger">Não estou utilizando</button>
+
+            <div id="status-alerta" class="status-box"></div>
+        </div>
+    </div>
+
+    <script>
+        // Objeto temporário para armazenar os dados do MVP em memória
+        let dadosUsuario = {};
+        let tentativasSemResposta = 0;
+
+        function mudarTela(telaOrigemId, telaDestinoId) {
+            document.getElementById(telaOrigemId).classList.remove('active');
+            document.getElementById(telaDestinoId).classList.add('active');
+        }
+
+        function cadastrarUsuario(event) {
+            event.preventDefault();
+            
+            // Salvando os dados preenchidos pela empresa
+            dadosUsuario.empresa = document.getElementById('empresa').value;
+            dadosUsuario.atuacao = document.getElementById('atuacao').value;
+            dadosUsuario.nomeFunc = document.getElementById('nomeFunc').value;
+            dadosUsuario.idFunc = document.getElementById('idFunc').value;
+            dadosUsuario.telFunc = document.getElementById('telFunc').value;
+
+            alert('Usuário cadastrado com sucesso pela empresa!');
+            mudarTela('screen-1', 'screen-2');
+        }
+
+        function fazerLogin(event) {
+            event.preventDefault();
+
+            const empresaInput = document.getElementById('loginEmpresa').value;
+            const idInput = document.getElementById('loginId').value;
+            const telInput = document.getElementById('loginTel').value;
+            const senhaInput = document.getElementById('loginSenha').value;
+
+            // Validação simples cruzando com os dados cadastrados na Tela 1
+            if (empresaInput === dadosUsuario.empresa && 
+                idInput === dadosUsuario.idFunc && 
+                telInput === dadosUsuario.telFunc) {
+                
+                dadosUsuario.senha = senhaInput;
+                
+                // Atualiza o nome na tela de notificações
+                document.getElementById('span-nome').textContent = dadosUsuario.nomeFunc;
+                
+                mudarTela('screen-2', 'screen-3');
+            } else {
+                alert('Dados incorretos! Verifique a empresa, ID e telefone informados no cadastro anterior.');
+            }
+        }
+
+        function confirmarEpi(estaUsando) {
+            const statusBox = document.getElementById('status-alerta');
+            statusBox.style.display = 'block';
+
+            if (estaUsando) {
+                tentativasSemResposta = 0;
+                document.getElementById('contador-avisos').textContent = tentativasSemResposta;
+                statusBox.style.backgroundColor = '#dcfce7';
+                statusBox.style.color = '#166534';
+                statusBox.innerHTML = 'Confirmação registrada! Obrigado por zelar pela sua segurança.';
+            } else {
+                tentativasSemResposta++;
+                document.getElementById('contador-avisos').textContent = tentativasSemResposta;
+
+                if (tentativasSemResposta >= 3) {
+                    statusBox.style.backgroundColor = '#fee2e2';
+                    statusBox.style.color = '#991b1b';
+                    statusBox.innerHTML = '⚠️ ADVERTÊNCIA EMITIDA! A empresa <strong>' + dadosUsuario.empresa + '</strong> foi notificada devido à ausência do uso de EPIs.';
+                } else {
+                    statusBox.style.backgroundColor = '#fef3c7';
+                    statusBox.style.color = '#92400e';
+                    statusBox.innerHTML = `⚠️ Atenção! Você recusou/ignorou o uso. Tentativa ${tentativasSemResposta}/3 antes de receber uma advertência.`;
+                }
+            }
+        }
+    </script>
+</body>
+</html>
