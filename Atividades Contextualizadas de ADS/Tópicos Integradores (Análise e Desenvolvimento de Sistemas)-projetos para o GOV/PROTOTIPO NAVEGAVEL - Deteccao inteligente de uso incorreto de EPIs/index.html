@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protótipo Navegável - Controle de EPIs</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg-gradient: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+            --card-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .phone-frame {
+            width: 100%;
+            max-width: 400px;
+            background: var(--card-bg);
+            border-radius: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+            border: 8px solid #111827;
+            display: flex;
+            flex-direction: column;
+            min-height: 650px;
+        }
+
+        /* Barra de Progresso do Fluxo */
+        .step-indicator {
+            display: flex;
+            background: #f9fafb;
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border);
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .step-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .step-dot.active {
+            background: var(--primary);
+            width: 24px;
+            border-radius: 4px;
+        }
+
+        .content-area {
+            padding: 24px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            margin-top: 0;
+            font-size: 1.25rem;
+            color: var(--text-main);
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.4rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 0.95rem;
+            background: #f9fafb;
+            transition: all 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.8rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-success { background-color: var(--success); }
+        .btn-success:hover { background-color: #059669; }
+
+        .btn-danger { background-color: var(--danger); }
+        .btn-danger:hover { background-color: #dc2626; }
+
+        /* Estilo do Card de Notificação */
+        .notification-card {
+            background: #eef2ff;
+            border: 1px solid #c7d2fe;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #3730a3;
+        }
+
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .alert-box {
+            margin-top: 1rem;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            text-align: center;
+            font-weight: 600;
+            display: none;
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="phone-frame">
+        <!-- Indicador de Etapas do Fluxo -->
+        <div class="step-indicator">
+            <span id="step-label">Passo 1 de 3: Cadastro Empresa</span>
+            <div style="display: flex; gap: 4px;">
+                <div class="step-dot active" id="dot-1"></div>
+                <div class="step-dot" id="dot-2"></div>
+                <div class="step-dot" id="dot-3"></div>
+            </div>
+        </div>
+
+        <div class="content-area">
+            
+            <!-- TELA 1: Cadastro da Empresa / Funcionário -->
+            <div id="screen-1" class="screen active">
+                <h2>Painel da Empresa</h2>
+                <div class="subtitle">Cadastre as informações iniciais do colaborador.</div>
+                
+                <form id="form-cadastro" onsubmit="salvarCadastro(event)">
+                    <div class="form-group">
+                        <label>Nome da Empresa</label>
+                        <input type="text" id="empresa" required placeholder="Ex: Metalúrgica Industrial">
+                    </div>
+                    <div class="form-group">
+                        <label>Área de Atuação</label>
+                        <input type="text" id="atuacao" required placeholder="Ex: Construção e Soldagem">
+                    </div>
+                    <div class="form-group">
+                        <label>Nome do Funcionário</label>
+                        <input type="text" id="nomeFunc" required placeholder="Ex: Carlos Alberto">
+                    </div>
+                    <div class="form-group">
+                        <label>ID do Funcionário</label>
+                        <input type="text" id="idFunc" required placeholder="Ex: MAT-9982">
+                    </div>
+                    <div class="form-group">
+                        <label>Número de Telefone</label>
+                        <input type="tel" id="telFunc" required placeholder="Ex: (11) 97777-8888">
+                    </div>
+                    <button type="submit" class="btn">Avançar para o Login</button>
+                </form>
+            </div>
+
+            <!-- TELA 2: Login do Usuário -->
+            <div id="screen-2" class="screen">
+                <h2>Acesso do Colaborador</h2>
+                <div class="subtitle">Entre com seus dados cadastrados para gerar sua senha.</div>
+                
+                <form id="form-login" onsubmit="realizarLogin(event)">
+                    <div class="form-group">
+                        <label>Empresa</label>
+                        <input type="text" id="loginEmpresa" required placeholder="Nome exato da empresa">
+                    </div>
+                    <div class="form-group">
+                        <label>ID do Funcionário</label>
+                        <input type="text" id="loginId" required placeholder="Seu ID corporativo">
+                    </div>
+                    <div class="form-group">
+                        <label>Telefone</label>
+                        <input type="tel" id="loginTel" required placeholder="Seu telefone cadastrado">
+                    </div>
+                    <div class="form-group">
+                        <label>Criar Nova Senha</label>
+                        <input type="password5" id="loginSenha" required placeholder="••••••••" style="font-family: monospace;">
+                    </div>
+                    <button type="submit" class="btn">Entrar na Central</button>
+                    <button type="button" class="btn" style="background:#e5e7eb; color:#374151; margin-top:8px;" onclick="irParaTela(1)">Voltar</button>
+                </form>
+            </div>
+
+            <!-- TELA 3: Recebimento de Notificações e Advertência -->
+            <div id="screen-3" class="screen">
+                <h2>Central de Alertas</h2>
+                <div class="subtitle">Monitoramento de Segurança Ativo</div>
+
+                <div class="notification-card">
+                    <strong>🔔 Lembrete de EPI</strong><br>
+                    Olá, <strong id="disp-nome">Colaborador</strong>! Identificamos sua entrada na área de risco da empresa <span id="disp-empresa" style="font-weight:700;"></span>.<br><br>
+                    Você está com os EPIs obrigatórios em uso?
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">
+                    <span>Tentativas sem resposta:</span>
+                    <span class="badge-warning" id="contador-badge">0 / 3</span>
+                </div>
+
+                <div class="actions-grid">
+                    <button onclick="responderNotificacao(true)" class="btn btn-success" style="margin-top:0;">Estou Usando ✅</button>
+                    <button onclick="responderNotificacao(false)" class="btn btn-danger" style="margin-top:0;">Não Estou ❌</button>
+                </div>
+
+                <div id="status-alerta" class="alert-box"></div>
+                
+                <button type="button" class="btn" style="background:#e5e7eb; color:#374151; margin-top: 15px;" onclick="reiniciarFluxo()">Reiniciar Protótipo</button>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        let errosConsecutivos = 0;
+
+        function irParaTela(numeroTela) {
+            // Esconde todas as telas
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            // Mostra a tela alvo
+            document.getElementById(`screen-${numeroTela}`).classList.add('active');
+
+            // Atualiza os pontos e texto do cabeçalho
+            document.querySelectorAll('.step-dot').forEach((dot, index) => {
+                if (index < numeroTela) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+
+            const labels = [
+                "Passo 1 de 3: Cadastro Empresa",
+                "Passo 2 de 3: Login Colaborador",
+                "Passo 3 de 3: Alertas de EPI"
+            ];
+            document.getElementById('step-label').textContent = labels[numeroTela - 1];
+        }
+
+        function salvarCadastro(e) {
+            e.preventDefault();
+            
+            const dados = {
+                empresa: document.getElementById('empresa').value.trim(),
+                atuacao: document.getElementById('atuacao').value.trim(),
+                nomeFunc: document.getElementById('nomeFunc').value.trim(),
+                idFunc: document.getElementById('idFunc').value.trim(),
+                telFunc: document.getElementById('telFunc').value.trim()
+            };
+
+            // Salva no armazenamento local do navegador
+            localStorage.setItem('dadosEmpresaEpi', JSON.stringify(dados));
+            
+            alert('Cadastro efetuado com sucesso!');
+            irParaTela(2);
+        }
+
+        function realizarLogin(e) {
+            e.preventDefault();
+
+            const dadosSalvos = JSON.parse(localStorage.getItem('dadosEmpresaEpi'));
+
+            if (!dadosSalvos) {
+                alert('Nenhum cadastro encontrado! Por favor, volte ao passo 1.');
+                irParaTela(1);
+                return;
+            }
+
+            const lEmpresa = document.getElementById('loginEmpresa').value.trim();
+            const lId = document.getElementById('loginId').value.trim();
+            const lTel = document.getElementById('loginTel').value.trim();
+            const lSenha = document.getElementById('loginSenha').value.trim();
+
+            // Validação rigorosa cruzando com o que foi cadastrado
+            if (lEmpresa === dadosSalvos.empresa && lId === dadosSalvos.idFunc && lTel === dadosSalvos.telFunc) {
+                dadosSalvos.senha = lSenha;
+                localStorage.setItem('dadosEmpresaEpi', JSON.stringify(dadosSalvos));
+
+                // Preenche os dados na tela 3
+                document.getElementById('disp-nome').textContent = dadosSalvos.nomeFunc;
+                document.getElementById('disp-empresa').textContent = dadosSalvos.empresa;
+
+                errosConsecutivos = 0;
+                irParaTela(3);
+            } else {
+                alert('Dados inválidos! Os campos devem coincidir exatamente com os informados no cadastro da empresa.');
+            }
+        }
+
+        function responderNotificacao(confirmou) {
+            const caixaAlerta = document.getElementById('status-alerta');
+            caixaAlerta.style.display = 'block';
+
+            if (confirmou) {
+                errosConsecutivos = 0;
+                document.getElementById('contador-badge').textContent = `${errosConsecutivos} / 3`;
+                caixaAlerta.style.background = '#d1fae5';
+                caixaAlerta.style.color = '#065f46';
+                caixaAlerta.innerHTML = '✨ Resposta registrada com sucesso! Obrigado por manter a segurança.';
+            } else {
+                errosConsecutivos++;
+                document.getElementById('contador-badge').textContent = `${errosConsecutivos} / 3`;
+
+                if (errosConsecutivos >= 3) {
+                    caixaAlerta.style.background = '#fee2e2';
+                    caixaAlerta.style.color = '#991b1b';
+                    caixaAlerta.innerHTML = '🚨 <strong>ADVERTÊNCIA EMITIDA!</strong> 3 avisos ignorados. A diretoria da empresa foi notificada automaticamente por falta de EPI.';
+                } else {
+                    caixaAlerta.style.background = '#fef3c7';
+                    caixaAlerta.style.color = '#92400e';
+                    caixaAlerta.innerHTML = `⚠️ Aviso ${errosConsecutivos}/3: O uso de EPI é obrigatório. Próximas recusas gerarão advertência formal.`;
+                }
+            }
+        }
+
+        function reiniciarFluxo() {
+            localStorage.clear();
+            document.getElementById('form-cadastro').reset();
+            document.getElementById('form-login').reset();
+            errosConsecutivos = 0;
+            document.getElementById('status-alerta').style.display = 'none';
+            irParaTela(1);
+        }
+    </script>
+</body>
+</html>
