@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal da Empresa - Gestão de EPIs</title>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --primary-hover: #1d4ed8;
+            --accent: #2563eb;
+            --bg-gradient: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --border: #cbd5e1;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 680px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .header {
+            background: var(--primary);
+            color: white;
+            padding: 20px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .badge-portal {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .content {
+            padding: 28px;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            margin-top: 0;
+            font-size: 1.35rem;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 0.95rem;
+            background: #f8fafc;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 13px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #334155;
+            margin-top: 10px;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e1;
+        }
+
+        /* Grid dos Planos */
+        .plans-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .plans-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .plan-card {
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .plan-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.15);
+        }
+
+        .plan-card.premium {
+            border-color: #93c5fd;
+            background: linear-gradient(to bottom, #eff6ff, #ffffff);
+        }
+
+        .plan-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .plan-tag {
+            font-size: 0.7rem;
+            background: var(--accent);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .plan-desc {
+            font-size: 0.86rem;
+            line-height: 1.55;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .plan-cta {
+            text-align: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--accent);
+            padding-top: 12px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .link-box {
+            margin-top: 20px;
+            padding: 16px;
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+        }
+
+        .link-box a {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 18px;
+            background: #059669;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>🛡️ SafeGuard EPI</h1>
+        <span class="badge-portal">Ambiente Corporativo</span>
+    </div>
+
+    <div class="content">
+        <!-- TELA 1: Login da Empresa -->
+        <div id="emp-screen-1" class="screen active">
+            <h2>Acesso da Empresa</h2>
+            <div class="subtitle">Entre com as credenciais corporativas para gerenciar planos e colaboradores.</div>
+            
+            <form onsubmit="loginEmpresa(event)">
+                <div class="form-group">
+                    <label>Nome ou CNPJ da Empresa</label>
+                    <input type="text" id="empLoginNome" required placeholder="Ex: Construtora Horizonte">
+                </div>
+                <div class="form-group">
+                    <label>E-mail Corporativo</label>
+                    <input type="email" id="empLoginEmail" required placeholder="gestor@empresa.com.br">
+                </div>
+                <div class="form-group">
+                    <label>Senha de Acesso</label>
+                    <input type="password" id="empLoginSenha" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn">Entrar no Painel da Empresa</button>
+            </form>
+        </div>
+
+        <!-- TELA 2: Seleção de Planos (Cards Clicáveis) -->
+        <div id="emp-screen-2" class="screen">
+            <h2>Escolha o Plano de Monitoramento</h2>
+            <div class="subtitle">Selecione a modalidade contratada para cadastrar os funcionários.</div>
+
+            <div class="plans-grid">
+                <!-- Card 1: Plano Simples -->
+                <div class="plan-card" onclick="selecionarPlano('Plano Simples')">
+                    <div>
+                        <div class="plan-title">
+                            <span>Plano Simples</span>
+                        </div>
+                        <div class="plan-desc">
+                            Ao clicar nesse plano, você seguirá para a tela de cadastro de usuário. Este plano oferece: notificação ao usuário para saber se ele está em conforme com os EPIs; não estando em conforme três vezes recusadas a notificação, o aplicativo enviará notificações para a empresa e supervisor notificando que o usuário não estava em conforme e não respondeu as últimas três notificações. Este plano inclui o pacote mais básico que podemos oferecer.
+                        </div>
+                    </div>
+                    <div class="plan-cta">Selecionar Plano Simples →</div>
+                </div>
+
+                <!-- Card 2: Plano Completo -->
+                <div class="plan-card premium" onclick="selecionarPlano('Plano Completo')">
+                    <div>
+                        <div class="plan-title">
+                            <span>Plano Completo</span>
+                            <span class="plan-tag">IA + Câmeras</span>
+                        </div>
+                        <div class="plan-desc">
+                            Além de ter tudo que é incluso no Plano Simples, você também terá o monitoramento via câmeras dentro do seu ambiente de trabalho como complemento ao aplicativo. Após os usuários receberem a notificação, essa câmera, com o auxílio de IA, irá monitorar os funcionários para ver se também estão em conforme com as notificações. Além de ser uma segurança extra, a empresa tem monitoramento por imagem para confirmar se, caso venha algum acidente, o funcionário não estava em conforme com as regras, aliviando a empresa de processos administrativos.
+                        </div>
+                    </div>
+                    <div class="plan-cta">Selecionar Plano Completo →</div>
+                </div>
+            </div>
+
+            <button type="button" class="btn btn-secondary" onclick="mudarTelaEmp(1)">Sair / Voltar ao Login</button>
+        </div>
+
+        <!-- TELA 3: Cadastro do Funcionário pela Empresa -->
+        <div id="emp-screen-3" class="screen">
+            <h2>Cadastro de Funcionário</h2>
+            <div class="subtitle">Modalidade ativa: <strong id="plano-escolhido-label" style="color: var(--accent);"></strong></div>
+
+            <form id="form-cadastro-func" onsubmit="cadastrarFuncionario(event)">
+                <div class="form-group">
+                    <label>Nome da Empresa</label>
+                    <input type="text" id="empresa" required placeholder="Ex: Construtora Horizonte">
+                </div>
+                <div class="form-group">
+                    <label>Área de Atuação da Empresa</label>
+                    <input type="text" id="atuacao" required placeholder="Ex: Engenharia e Obras">
+                </div>
+                <div class="form-group">
+                    <label>Nome do Funcionário</label>
+                    <input type="text" id="nomeFunc" required placeholder="Ex: Marcos Oliveira">
+                </div>
+                <div class="form-group">
+                    <label>ID do Funcionário</label>
+                    <input type="text" id="idFunc" required placeholder="Ex: FUNC-104">
+                </div>
+                <div class="form-group">
+                    <label>Número de Telefone do Usuário</label>
+                    <input type="tel" id="telFunc" required placeholder="Ex: (81) 99999-8888">
+                </div>
+                <button type="submit" class="btn">Salvar Cadastro do Funcionário</button>
+                <button type="button" class="btn btn-secondary" onclick="mudarTelaEmp(2)">Trocar Plano</button>
+            </form>
+
+            <!-- Link para o Portal do Funcionário -->
+            <div id="box-link-funcionario" class="link-box">
+                <strong>✅ Funcionário cadastrado com sucesso!</strong><br>
+                <span style="font-size: 0.85rem; color: #065f46;">Envie ou acesse o link exclusivo do colaborador abaixo:</span><br>
+                <a href="funcionario.html" target="_blank">Abrir Link do Funcionário (funcionario.html) ↗</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let nomeEmpresaLogada = "";
+    let planoAtual = "";
+
+    function mudarTelaEmp(numero) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(`emp-screen-${numero}`).classList.add('active');
+    }
+
+    function loginEmpresa(e) {
+        e.preventDefault();
+        nomeEmpresaLogada = document.getElementById('empLoginNome').value.trim();
+        mudarTelaEmp(2);
+    }
+
+    function selecionarPlano(plano) {
+        planoAtual = plano;
+        document.getElementById('plano-escolhido-label').textContent = plano;
+        // Preenche automaticamente o nome da empresa logada para agilizar
+        document.getElementById('empresa').value = nomeEmpresaLogada;
+        document.getElementById('box-link-funcionario').style.display = 'none';
+        mudarTelaEmp(3);
+    }
+
+    function cadastrarFuncionario(e) {
+        e.preventDefault();
+
+        const dadosCadastro = {
+            plano: planoAtual,
+            empresa: document.getElementById('empresa').value.trim(),
+            atuacao: document.getElementById('atuacao').value.trim(),
+            nomeFunc: document.getElementById('nomeFunc').value.trim(),
+            idFunc: document.getElementById('idFunc').value.trim(),
+            telFunc: document.getElementById('telFunc').value.trim()
+        };
+
+        // Salva no localStorage para ser lido pelo outro link (funcionario.html)
+        localStorage.setItem('sistemaEpiCadastro', JSON.stringify(dadosCadastro));
+
+        document.getElementById('box-link-funcionario').style.display = 'block';
+    }
+</script>
+
+</body>
+</html>

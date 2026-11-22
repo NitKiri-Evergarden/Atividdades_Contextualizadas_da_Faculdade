@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App do Colaborador - Controle de EPIs</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg-gradient: linear-gradient(135deg, #e0e7ff 0%, #f3f4f6 100%);
+            --card-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            margin: 0;
+            padding: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .phone-frame {
+            width: 100%;
+            max-width: 410px;
+            background: var(--card-bg);
+            border-radius: 26px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.12);
+            overflow: hidden;
+            border: 8px solid #111827;
+            display: flex;
+            flex-direction: column;
+            min-height: 640px;
+        }
+
+        .top-bar {
+            background: #111827;
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .content-area {
+            padding: 24px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.35s ease;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            margin-top: 0;
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .subtitle {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 0.95rem;
+            background: #f9fafb;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 13px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.2s;
+        }
+
+        .btn:hover { background-color: var(--primary-hover); }
+        .btn-success { background-color: var(--success); }
+        .btn-success:hover { background-color: #059669; }
+        .btn-danger { background-color: var(--danger); }
+        .btn-danger:hover { background-color: #dc2626; }
+
+        .timer-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #111827;
+            color: #ffffff;
+            padding: 10px 14px;
+            border-radius: 10px;
+            margin-bottom: 14px;
+            font-size: 0.84rem;
+            font-weight: 600;
+        }
+
+        .timer-value {
+            font-variant-numeric: tabular-nums;
+            background: #ef4444;
+            color: #ffffff;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 800;
+        }
+
+        .timer-value.paused {
+            background: #4b5563;
+        }
+
+        .notification-card {
+            background: #eef2ff;
+            border: 1px solid #c7d2fe;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 14px;
+            font-size: 0.88rem;
+            line-height: 1.55;
+            color: #1e1b4b;
+        }
+
+        .camera-badge {
+            display: none;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            margin-bottom: 14px;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .counter-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            padding: 8px 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 700;
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .alert-box {
+            margin-top: 16px;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 0.86rem;
+            line-height: 1.5;
+            font-weight: 500;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="phone-frame">
+    <div class="top-bar">
+        <span>📱 App do Colaborador</span>
+        <span id="badge-plano">Aguardando Login</span>
+    </div>
+
+    <div class="content-area">
+        <!-- TELA 1 DO FUNCIONÁRIO: Login -->
+        <div id="func-screen-1" class="screen active">
+            <h2>Login do Funcionário</h2>
+            <div class="subtitle">Insira os dados cadastrados pela sua empresa e crie sua senha de acesso.</div>
+
+            <form onsubmit="fazerLoginFuncionario(event)">
+                <div class="form-group">
+                    <label>Nome da Empresa</label>
+                    <input type="text" id="loginEmpresa" required placeholder="Empresa onde trabalha">
+                </div>
+                <div class="form-group">
+                    <label>ID do Funcionário</label>
+                    <input type="text" id="loginId" required placeholder="ID cadastrado pela empresa">
+                </div>
+                <div class="form-group">
+                    <label>Número de Telefone</label>
+                    <input type="tel" id="loginTel" required placeholder="Telefone cadastrado">
+                </div>
+                <div class="form-group">
+                    <label>Criar Senha</label>
+                    <input type="password" id="loginSenha" required placeholder="Crie sua senha">
+                </div>
+                <button type="submit" class="btn">Acessar Notificações</button>
+            </form>
+        </div>
+
+        <!-- TELA 2 DO FUNCIONÁRIO: Notificações de EPI -->
+        <div id="func-screen-2" class="screen">
+            <h2>Central de EPIs</h2>
+            <div class="subtitle">Confirmação periódica de segurança</div>
+
+            <div class="timer-box">
+                <span>⏱️ Tempo para responder:</span>
+                <span class="timer-value" id="timer-display">10s</span>
+            </div>
+
+            <!-- Aviso extra caso a empresa tenha contratado o Plano Completo -->
+            <div id="aviso-camera-ia" class="camera-badge">
+                <span>📹</span>
+                <span>Monitoramento por Câmera + IA ativo neste ambiente.</span>
+            </div>
+
+            <div class="notification-card">
+                <strong>🔔 Notificação do Sistema:</strong><br><br>
+                Bem-vindo, <strong id="disp-nome">Usuário</strong>! Hoje você tem que receber os EPIs obrigatórios da área de <strong id="disp-atuacao"></strong> e estar com esses EPIs sempre.<br><br>
+                Este aplicativo irá lhe enviar periodicamente notificações para relembrar de utilizar os EPIs. Você deve confirmar que recebeu esta notificação e confirmar que está utilizando os EPIs.
+            </div>
+
+            <div class="counter-row">
+                <span>Notificações sem OK:</span>
+                <span class="badge-warning" id="contador-badge">0 / 3</span>
+            </div>
+
+            <div class="actions-grid">
+                <button id="btn-ok" onclick="responderNotificacao(true)" class="btn btn-success" style="margin-top:0;">Dar OK (Estou usando)</button>
+                <button id="btn-recusar" onclick="responderNotificacao(false)" class="btn btn-danger" style="margin-top:0;">Não responder / Recusar</button>
+            </div>
+
+            <div id="status-alerta" class="alert-box"></div>
+
+            <button type="button" class="btn" style="background:#e5e7eb; color:#374151; margin-top: 18px;" onclick="sairConta()">Sair</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const TEMPO_LIMITE = 10;
+    let faltasResposta = 0;
+    let tempoRestante = TEMPO_LIMITE;
+    let intervaloTimer = null;
+
+    function mudarTelaFunc(numero) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(`func-screen-${numero}`).classList.add('active');
+    }
+
+    function pararTimer() {
+        if (intervaloTimer) {
+            clearInterval(intervaloTimer);
+            intervaloTimer = null;
+        }
+    }
+
+    function iniciarTimer() {
+        pararTimer();
+        if (faltasResposta >= 3) {
+            atualizarDisplayTimer(0, true);
+            return;
+        }
+
+        tempoRestante = TEMPO_LIMITE;
+        atualizarDisplayTimer(tempoRestante, false);
+
+        intervaloTimer = setInterval(() => {
+            tempoRestante--;
+            atualizarDisplayTimer(tempoRestante, false);
+
+            if (tempoRestante <= 0) {
+                pararTimer();
+                registrarNaoConformidade(true);
+            }
+        }, 1000);
+    }
+
+    function atualizarDisplayTimer(segundos, encerrado) {
+        const display = document.getElementById('timer-display');
+        display.textContent = `${segundos}s`;
+        if (encerrado) {
+            display.classList.add('paused');
+        } else {
+            display.classList.remove('paused');
+        }
+    }
+
+    function fazerLoginFuncionario(e) {
+        e.preventDefault();
+
+        const dadosSalvos = JSON.parse(localStorage.getItem('sistemaEpiCadastro'));
+
+        if (!dadosSalvos) {
+            alert('Nenhum cadastro de funcionário encontrado! Peça para a empresa realizar o cadastro primeiro no portal da empresa (empresa.html).');
+            return;
+        }
+
+        const empInput = document.getElementById('loginEmpresa').value.trim();
+        const idInput = document.getElementById('loginId').value.trim();
+        const telInput = document.getElementById('loginTel').value.trim();
+        const senhaInput = document.getElementById('loginSenha').value.trim();
+
+        if (empInput === dadosSalvos.empresa && idInput === dadosSalvos.idFunc && telInput === dadosSalvos.telFunc) {
+            dadosSalvos.senha = senhaInput;
+            localStorage.setItem('sistemaEpiCadastro', JSON.stringify(dadosSalvos));
+
+            document.getElementById('disp-nome').textContent = dadosSalvos.nomeFunc;
+            document.getElementById('disp-atuacao').textContent = dadosSalvos.atuacao;
+            document.getElementById('badge-plano').textContent = dadosSalvos.plano || 'Ativo';
+
+            if (dadosSalvos.plano === 'Plano Completo') {
+                document.getElementById('aviso-camera-ia').style.display = 'flex';
+            } else {
+                document.getElementById('aviso-camera-ia').style.display = 'none';
+            }
+
+            faltasResposta = 0;
+            document.getElementById('contador-badge').textContent = '0 / 3';
+            document.getElementById('status-alerta').style.display = 'none';
+            definirBotoesAtivos(true);
+
+            mudarTelaFunc(2);
+            iniciarTimer();
+        } else {
+            alert('Dados incorretos! Verifique o nome da empresa, ID e telefone cadastrados anteriormente.');
+        }
+    }
+
+    function definirBotoesAtivos(ativo) {
+        document.getElementById('btn-ok').disabled = !ativo;
+        document.getElementById('btn-recusar').disabled = !ativo;
+    }
+
+    function registrarNaoConformidade(porTempoEsgotado) {
+        const caixaAlerta = document.getElementById('status-alerta');
+        caixaAlerta.style.display = 'block';
+
+        faltasResposta++;
+        document.getElementById('contador-badge').textContent = `${faltasResposta} / 3`;
+
+        if (faltasResposta >= 3) {
+            pararTimer();
+            atualizarDisplayTimer(0, true);
+            definirBotoesAtivos(false);
+            caixaAlerta.style.background = '#fee2e2';
+            caixaAlerta.style.color = '#991b1b';
+            caixaAlerta.style.border = '1px solid #fca5a5';
+            caixaAlerta.innerHTML = '⚠️ <strong>Aviso Importante:</strong><br><br>Você não deu OK durante as três últimas notificações. Com isso, para fim de segurança sua e da empresa, enviaremos uma notificação ao seu supervisor, onde ele tomará as medidas para poder saber se você está em conforme ou não com os EPIs. Muito obrigado e tenha cuidado durante seu trabalho.';
+        } else {
+            const motivo = porTempoEsgotado
+                ? `O tempo de 10 segundos expirou sem resposta: registrado como não conformidade (${faltasResposta}/3).`
+                : `Atenção: você não confirmou o uso dos EPIs (${faltasResposta}/3).`;
+
+            caixaAlerta.style.background = '#fef3c7';
+            caixaAlerta.style.color = '#92400e';
+            caixaAlerta.style.border = '1px solid #fcd34d';
+            caixaAlerta.innerHTML = `⚠️ ${motivo} Na terceira falta de confirmação, seu supervisor será notificado.`;
+            iniciarTimer();
+        }
+    }
+
+    function responderNotificacao(deuOk) {
+        pararTimer();
+        const caixaAlerta = document.getElementById('status-alerta');
+        caixaAlerta.style.display = 'block';
+
+        if (deuOk) {
+            faltasResposta = 0;
+            document.getElementById('contador-badge').textContent = `${faltasResposta} / 3`;
+            caixaAlerta.style.background = '#d1fae5';
+            caixaAlerta.style.color = '#065f46';
+            caixaAlerta.style.border = '1px solid #a7f3d0';
+            caixaAlerta.innerHTML = '✅ Confirmação registrada! Obrigado por estar em conformidade com os EPIs.';
+            iniciarTimer();
+        } else {
+            registrarNaoConformidade(false);
+        }
+    }
+
+    function sairConta() {
+        pararTimer();
+        mudarTelaFunc(1);
+    }
+</script>
+
+</body>
+</html>
